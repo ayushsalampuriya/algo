@@ -1,0 +1,50 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+stack<int> s;
+
+void qwe(int a[10][10], int visited[], int i, int n)
+{
+	visited[i]=1;
+	for(int j=0;j<n;j++)
+	{
+		if(a[i][j]==1 && visited[j]==0)
+			qwe(a,visited,j,n);
+	}
+	s.push(i);
+}
+
+void topo(int a[10][10], int n)
+{
+	int visited[n]={0};
+	for(int i=0;i<n;i++)
+	{
+		if(visited[i]==0)
+		{
+			qwe(a,visited,i,n);
+		}
+	}
+}
+
+int main()
+{
+	int n=10;
+	int v=13;
+	int a[10][10]={0};
+	for(int i=0;i<v;i++)
+	{
+		int x,y;
+		cin>>x>>y;
+		a[x][y]=1;
+	}
+	
+	topo(a,n);
+	
+	while(s.empty()==false)
+	{
+		cout<<s.top()<<" ";
+		s.pop();
+	}
+	
+	return 0;
+}
