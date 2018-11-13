@@ -1,118 +1,73 @@
 #include<bits/stdc++.h>
 using namespace std;
-#define vd vector<double>
-#define vi vector<int>
-bool flag;
-vi LUP_Decomposition(vector<vd> coeff,vector<vd> &L,vector<vd> &U)
-{
-int n=coeff.size();
-vector<int> P(n);
-for(int i=0;i<n;i++)
-P[i]=i;
-for(int k=0;k<n;k++)
-{
-double d=0,v;
-int storei;
-for(int i=k;i<n;i++)
-{
-v=coeff[i][k];
-if(v>d||d<­v)
-{
-d=v;
-storei=i;
-}
-}
-if(d==0)
-{
-cout<<"Error::Cannot Divide by Zero\n";
-flag=0;
-return P;
-}
-double temp;
-for(int i=0;i<n;i++)
-{
-swap(coeff[k][i],coeff[storei][i]);
-}
-swap(P[k],P[storei]);
-for(int i=k+1;i<n;i++)
-{
-coeff[i][k]/=coeff[k][k];
-for(int j=k+1;j<n;j++)
-coeff[i][j]­=coeff[i][k]*coeff[k][j];
-}
-}
-for(int i=0;i<n;i++)
-for(int j=0;j<n;j++)
-{
-if(i<j)U[i][j]=coeff[i][j];
-else if(i>j)
-L[i][j]=coeff[i][j];
-else
-{
-L[i][j]=1;
-U[i][j]=coeff[i][j];
-}
-}
-return P;
-}
-vd LUP_Solve(vector<vd> &L,vector<vd> &U,vi &P,vd &b)
-{
-int n=L.size();
-vd y(n),x(n);
-for(int i=0;i<n;i++)
-{
-double sum=0;
-for(int j=0;j<i;j++)
-sum+=L[i][j]*y[j];
-y[i]=b[P[i]]­sum;
-}
-for(int i=n­1;i>=0;i­­)
-{
-double sum=0;
-for(int j=i+1;j<n;j++)
-sum+=U[i][j]*x[j];
-x[i]=(y[i]­sum)/U[i][i];
-}
-return x;
-}
+
 int main()
 {
-int var;
-flag=1;
-cout<<endl<<"Enter the No. of Variables : ";
-cin>>var;
-vector<vd > coeff(var,vd(var)),L(var,vd(var)),U(var,vd(var));;
-vector<double> b(var);
-cout<<endl<<endl<<"Enter the Coefficient Matrix : \n";
-for(int i=0;i<var;i++)
-{
-for(int j=0;j<var;j++)
-cin>>coeff[i][j];
-}
-cout<<endl<<"Enter the Resultant Matrix : \n";
-for(int i=0;i<var;i++)
-cin>>b[i];
-vi P=LUP_Decomposition(coeff,L,U);
-if(!flag)
-{
-cout<<endl<<"ANSWER CANNOT BE COMPUTED!!";return 0;
-}
-cout<<endl<<"\nLower Unit Triangular Matrix is : \n";
-for(int i=0;i<var;i++)
-{
-for(int j=0;j<var;j++)
-cout<<L[i][j]<<" ";
-cout<<endl;
-}
-cout<<endl<<"\nUpper Triangular Matrix is : \n";
-for(int i=0;i<var;i++)
-{
-for(int j=0;j<var;j++)
-cout<<U[i][j]<<" ";
-cout<<endl;
-}
-cout<<endl<<endl<<"Values of Variables are : \n";
-vd ans=LUP_Solve(L,U,P,b);
-for(int i=0;i<var;i++)
-cout<<"x"<<i+1<<" = "<<ans[i]<<endl;
+	int n;
+	cout << "Enter Dimension of Matrix : ";
+	cin >> n;
+	int i,j,k;
+	float a[n][n],b[n],x[n],y[n],l[n][n],u[n][n];
+	memset(l,0,sizeof(l));
+	memset(u,0,sizeof(u));
+	cout << "Enter Coefficient Matrix : " << endl;
+	for(i=0;i<n;i++)
+		for(j=0;j<n;j++)
+			cin >> a[i][j];
+	cout << "Enter Constant Vector : " << endl;
+	for(i=0;i<n;i++)
+		cin >> b[i];
+	for(k=0;k<n;k++) // LU DECOMPOSITION
+	{
+		u[k][k] = a[k][k];
+		for(i=k+1;i<n;i++)
+		{
+			l[i][k] = a[i][k]/u[k][k];
+			u[k][i] = a[k][i];
+		}
+		for(i=k+1;i<n;i++)
+		{
+			for(j=k+1;j<n;j++)
+				a[i][j] = a[i][j] - l[i][k]*u[k][j];
+		}
+	}
+	for(i=0;i<n;i++)
+		l[i][i] = 1;
+	for(i=0;i<n;i++) // Y CALCULATION
+	{
+		float sum=0;
+		for(j=0;j<i;j++)
+			sum += l[i][j]*y[j];
+		y[i] = b[i] - sum;
+	}
+	for(i=n-1;i>=0;i--) // X CALCULATION
+	{
+		float sum=0;
+		for(j=i+1;j<n;j++)
+			sum += u[i][j]*x[j];
+		x[i] = (y[i] - sum)/u[i][i];
+	}
+	cout << "L Matrix : " << endl; // L PRINTING
+	for(i=0;i<n;i++)
+	{
+		for(j=0;j<n;j++)
+			cout << l[i][j] << "  ";
+		cout << endl;
+	}
+	cout << "U Matrix : " << endl; // U PRINTING
+	for(i=0;i<n;i++)
+	{
+		for(j=0;j<n;j++)
+			cout << u[i][j] << "  ";
+		cout << endl;
+	}
+	cout << "Y Vector : " << endl; // Y PRINTING
+	for(i=0;i<n;i++)
+		cout << y[i] << "  ";
+	cout << endl;
+	cout << "X Vector : " << endl; // X PRINTING
+	for(i=0;i<n;i++)
+		cout << x[i] << "  ";
+	cout << endl;
+	return 0;
 }
