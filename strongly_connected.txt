@@ -1,0 +1,52 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+stack<int> s;
+
+void dfs(int a[20][20], int n, int sv, int visited[])
+{
+	if(visited[sv]==0)s.push(sv);
+	visited[sv]=1;
+	for(int i=0;i<n;i++)
+	{
+		if(visited[i]==0 && a[sv][i]==1)dfs(a,n,i,visited);
+	}
+}
+
+void dfst(int t[20][20], int n, int x, int visitedt[],int a[20][20])
+{
+	if(visitedt[x]==0)
+	{
+		cout<<s.top()<<" ";s.pop();
+	}
+	visitedt[x]=1;
+	for(int i=0;i<n;i++)
+	{
+		if(visitedt[i]==0 && a[x][i]==1 )dfst(t,n,i,visitedt,a);
+	}
+	
+}
+
+int main()
+{
+	int n,e;
+	cin>>n>>e;
+	int a[20][20]={0};
+	int t[20][20]={0};
+	
+	for(int i=0;i<e;i++)
+	{
+		int q,w;
+		cin>>q>>w;
+		a[q][w]=1;
+		t[w][q]=1;
+	}
+	int visited[n]={0};
+	int visitedt[n]={0};
+	for(int i=0;i<n;i++)
+	dfs(a,n,i,visited);
+	while(s.empty()==false)
+	{
+		dfst(t,n,s.top(),visitedt, a);cout<<endl;
+	}
+}
