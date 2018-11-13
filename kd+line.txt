@@ -1,0 +1,160 @@
+KD TREE CONSTRUCTION
+
+#include <bits/stdc++.h>
+using namespace std;
+struct Point
+{
+        int x,y;
+};
+bool comparex(Point a, Point b)
+{
+        if(a.x!=b.x) return a.x < b.x;
+        return a.y<b.y;
+}
+
+bool comparey(Point a, Point b)
+{
+        if(a.y!=b.y) return a.y < b.y;
+        return a.x<b.x;
+}
+struct node
+{
+        node *left, *right;
+        int axis;
+        float split ;
+        bool leaf;
+        Point value ;
+};
+node* kdtree(vector <Point> p, int depth )
+{
+        cout<<"\nDepth "<<depth<<"."<<endl;
+        node* v = new node();
+        v->left = NULL;
+        v->right = NULL;
+        float split ;
+        int axis;
+        int n= p.size();
+        vector <Point> left, right;
+        if(n==1)
+        {
+                cout<<"\nLeaf Node:\n";
+                cout<<"("<<p[0].x<<","<<p[0].y<<")"<<endl;
+                v->value = p[0];
+                v->leaf = true;
+                return v;
+        }
+        else if(depth%2==0)
+        {
+                axis = 0;
+                sort(p.begin(),p.begin()+n,comparex);
+                cout<<"Points:\n";
+                for(int i=0;i<p.size();i++)
+                cout<<"("<<p[i].x<<","<<p[i].y<<")"<<endl;
+                if(p.size()%2 == 0)
+                {
+                        left = vector <Point> (p.begin(),p.begin()+n/2);
+                        right = vector <Point> (p.begin()+n/2,p.begin()+n);
+                        split = (p[n/2-1].x + p[n/2].x)/2.0;
+                        cout<<"Split: "<<split<<endl;
+                }
+                else
+                {
+                        left = vector <Point> (p.begin(),p.begin()+n/2+1);
+                        right = vector <Point> (p.begin()+n/2+1,p.begin()+n);
+                        split = p[n/2].x;
+                        cout<<"Split: "<<split<<endl;
+                }
+        }
+        else if(depth%2!=0)
+        {
+                axis = 1;
+                sort(p.begin(),p.end(),comparey);
+                cout<<"Points:\n";
+                for(int i=0;i<p.size();i++)
+                cout<<"("<<p[i].x<<","<<p[i].y<<")"<<endl;
+                if(p.size()%2 == 0)
+                {
+                        left = vector <Point> (p.begin(),p.begin()+n/2);
+                        right = vector <Point> (p.begin()+n/2,p.begin()+n);
+                        split = (p[n/2-1].y + p[n/2].y)/2.0;
+                        cout<<"Split: "<<split<<endl;
+                }
+                else
+                {
+                        left = vector <Point> (p.begin(),p.begin() + n/2+1);
+                        right = vector <Point> (p.begin()+n/2+1,p.begin()+n);
+                        split = p[n/2].y;
+                        cout<<"Split: "<<split<<endl;
+                }
+        }
+
+        v->left = kdtree(left,depth+1);
+        v->right = kdtree(right,depth+1);       
+        v->split = split;
+        v->axis = axis;
+        v->leaf= false;
+        return v;
+}
+int main()
+{
+        int n;
+        cout<<"Enter total no. of points :";
+        cin>>n;
+        vector <Point> p(n);
+        cout<<"\nenter points \n";
+        for(int i=0;i<n;i++)
+        cin>>p[i].x>>p[i].y;
+        node* tree= kdtree(p,0);
+}
+
+
+LINE PAIR INTERSECTION
+
+#include<bits/stdc++.h>
+using namespace std;
+struct point
+        {
+        int x,y;
+        };
+bool onsegment(point p,point q,point r)
+        {
+        if(q.x<=max(p.x,r.x) && q.x >= min(p.x, r.x) && q.y <= max(p.y, r.y)
+&& q.y >= min(p.y, r.y))
+                return true;
+        return false;
+        }
+int direc(point p,point q,point r)
+        {
+        int val = (q.y - p.y) * (r.x - q.x) -(q.x - p.x) * (r.y - q.y);
+        if (val == 0) return 0;
+        return (val > 0)? 1: 2;
+        }
+bool segment_intersection(point p1,point q1,point p2,point q2)
+        {
+        int d1 = direc(p1, q1, p2);
+        int d2 = direc(p1, q1, q2);
+        int d3 = direc(p2, q2, p1);
+        int d4 = direc(p2, q2, q1);
+        if (d1 != d2 && d3 != d4) return true;
+        if (d1 == 0 && onsegment(p1, p2, q1)) return true;
+        if (d2 == 0 && onsegment(p1, q2, q1)) return true;
+        if (d3 == 0 && onsegment(p2, p1, q2)) return true;
+        if (d4 == 0 && onsegment(p2, q1, q2)) return true;
+        }
+int main()
+        {
+        struct point p1,q1,p2,q2;
+        cout<<"\nenter coordinates of p1 :";
+        cin>>p1.x>>p1.y;
+        cout<<"\nenter coordinates of q1 :";
+        cin>>q1.x>>q1.y;
+        cout<<"\nenter coordinates of p2 :";
+        cin>>p2.x>>p2.y;
+        cout<<"\nenter coordinates of q2 :";
+        cin>>q2.x>>q2.y;
+        bool r=segment_intersection(p1,q1,p2,q2);
+        if(r==true) cout<<"\ngiven lines intersect each other\n";
+        else cout<<"\ngiven lines do not intersect each other\n";
+        return 0;
+        }
+
